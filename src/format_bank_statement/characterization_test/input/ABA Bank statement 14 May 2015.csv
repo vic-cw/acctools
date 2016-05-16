@@ -1,0 +1,6 @@
+Account 012345678910 Posted Operations
+Operation Date and Time;Operation Amount;Operation Description;Amount in account currency;Debit/Credit Date;Remain amount
+15/04/2015;;Opening balance;0.00;15/04/2015;123.45
+14/05/2015;;Closing balance;0.00;14/05/2015;123.45
+18/05/2015;;Existing blocked amounts;0.00;18/05/2015;123.45
+18/05/2015;;Total blocked amounts;+48.22;18/05/2015;123.45

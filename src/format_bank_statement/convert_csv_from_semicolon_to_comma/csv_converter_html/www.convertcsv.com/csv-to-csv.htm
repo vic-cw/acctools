@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="description" content="Reformat CSV data"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<!-- Copyright 2013 ConvertCsv.com -->
+<title>CSV To Delimited Converter</title>
+<script src="js/underscore-min.js"></script>
+<script src="strsup.js"></script>
+<script src="localread.js"></script>
+<script src="csvparse.js"></script>
+<script src="csvsup.js"></script>
+<script src="js/blob.js"></script>
+<script src="js/filesaver.js"></script>
+<link href="layout3col.css" rel="stylesheet" type="text/css">
+<script src="RedQueryBuilder/RedQueryBuilder.nocache.js" >//</script>
+<link href="RedQueryBuilder/gwt/dark/dark.css" rel="stylesheet" type="text/css" />
+<script src="RedQueryBuilder/RedQueryBuilderFactory.nocache.js" >//</script>
+<script src="csvquery.js"></script>
+
+<script type="text/javascript">
+    function assignText(s) {
+        document.getElementById('txt1').value = s;
+        parseAndOptions(CSV);
+        setupSortDD();
+        document.getElementById('btnRun').click();
+    }
+    function runit() {
+        var delimiter = radiovalue(document.forms[0].outsep);
+        var append = document.getElementById('chkAppend').checked;
+        var nobreaks = document.getElementById('chkNoBreaks').checked;
+        var bQuotes = (document.getElementById('chkCsvQuotes')).checked;
+        if (delimiter == "o") delimiter = document.getElementById("outSepOtherVal").value;
+        if (CSV.mySortNeeded) parseAndOptions(CSV);
+        if(!append) {
+           document.getElementById('txta').value = csvToCsv(CSV, delimiter, document.getElementById('chkHeader').checked, document.getElementById('chkForce').checked, document.getElementById('chkDefaultHeader').checked, nobreaks, bQuotes);
+        } else {
+           document.getElementById('txta').value += csvToCsv(CSV, delimiter, document.getElementById('txta').value.length==0 && document.getElementById('chkHeader').checked, document.getElementById('chkForce').checked, document.getElementById('chkDefaultHeader').checked, nobreaks, bQuotes);
+        }
+    }
+    function runExample()
+    {
+        assignText(getExampleCsv());
+    }
+
+</script>
+<style>
+ table { border-collapse:collapse; }
+ table,th, td { border: 1px solid black; }
+</style>
+</head> 
+<body>
+
+<div class="heading">
+<h1>Convert CSV To TSV or Delimited</h1>
+</div>
+<div class="container">
+<div class="leftnew">
+    <b>CSV Conversions</b><br/>
+ 
+<script src="js/csvlinks.js"></script>
+<br>
+<br>
+<script async src="../pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Downsides Wide -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:300px;height:600px"
+     data-ad-client="ca-pub-2674404638298268"
+     data-ad-slot="2020261410"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+</div>
+<div class="rightnew">
+<!-- advertising goes here -->
+    <br>
+<br>
+<br>
+
+</div>
+<div class="middlenew">
+    <p>Use this tool convert CSV to delimited output. You may choose a new delimiter. 
+        You can convert to and from pipe delimited, colon or semi-colon delimited, comma delimited, tab delimited, 
+        or choose a custom delimiter.
+        It will add missing headers if you like. 
+        It will force Excel to treat fields as text if requested.
+        This free CSV tool allows you to include/exclude fields, rearrange fields, and sort CSV fields numerically or by character.
+       You can to include/exclude rows by using our new query option. 
+   </p>
+
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-2674404638298268";
+/* WideAcross */
+google_ad_slot = "4850643811";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="../pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<form>
+   <br/><b>Choose CSV file here</b>
+    <input type="file" id="f1" onchange="loadTextFile(this,assignText)" title="Choose a local CSV file" />
+   <br/><b>or Enter an URL</b> <input type="text" size="40" value="" name="url" id="url" title="Enter the URL of a web page returning CSV" /> 
+         <input type="button" id="btnUrl" value="Load URL" title="Load CSV via URL" onclick="loadURL(document.getElementById('url').value)" />
+   <br/><b>or paste into Text Box below</b><br/>
+   <label><input type="checkbox" name="chkHeader" id="chkHeader" value="Y" onclick="parseAndOptions(CSV)" checked /> First row is column names&nbsp;&nbsp; </label>
+   &nbsp;&nbsp;
+    Limit # of lines: <input type="text" id="txtRowLimit" size="5" maxlength="5" onblur="CSV.limit=this.value;parseAndOptions(CSV)" title="Specify how many records to convert">
+   <br/>Field Separator: 
+   <label><input type="radio" name="sep" id="sepAuto" value="" onclick="CSV.autodetect=true;parseAndOptions(CSV)" checked> Auto Detect</label>
+   <label><input type="radio" name="sep" id="sepComma" value="," onclick="CSV.autodetect=false;CSV.delimiter = this.value; parseAndOptions(CSV)" > Comma-,</label>
+   <label><input type="radio" name="sep" id="sepSemicolon" value=";" onclick="CSV.autodetect=false;CSV.delimiter = this.value; parseAndOptions(CSV)"> Semi-colon-;</label>
+   <label><input type="radio" name="sep" id="sepColon" value=":" onclick="CSV.autodetect=false;CSV.delimiter = this.value; parseAndOptions(CSV)"> Colon-:</label>
+   <label><input type="radio" name="sep" id="sepPipe" value="|" onclick="CSV.autodetect=false;CSV.delimiter = this.value; parseAndOptions(CSV)"> Bar-|</label>
+   <label><input type="radio" name="sep" id="sepTab" value=" " onclick="CSV.autodetect=false;CSV.delimiter = '\t'; parseAndOptions(CSV)"> Tab</label>
+   <label><input type="radio" name="sep" id="sepSpace" value=" " onclick="CSV.autodetect=false;CSV.delimiter = this.value; parseAndOptions(CSV)"> Space</label>
+   <br/><label><input type="checkbox" value="Y" id="chkIgnoreDoubleQuote" onclick="CSV.ignoreQuote=this.checked;parseAndOptions(CSV)" title="All double quotes are data" /> Treat all double quotes as data</label>
+    <br/><input type="button" value="Clear Input" onclick="window.location.reload(true)">
+    &nbsp; <input type="button" value="Example" onclick="runExample()"><br/>
+  <textarea class="xxxxlined" rows="10" cols="80" id="txt1" onchange="parseAndOptions(CSV);setupSortDD();" placeholder="CSV Data" wrap="off"></textarea>
+<div id="divInputCounts"></div>
+<div id="divCols">
+<label>Display which field positions? (Comma separated list where 1 is first field, 2=second,... i.e. 2,1,3,4)<br/>
+    <input type="text" id="txtCols" size="50" value="" onchange="CSV.displayPoss=this.value;" title="i.e. 1,3,4,6"></label>
+    <input type="button" id="btnColsReset" value="Reset" onclick="CSV.displayPoss='';document.getElementById('txtCols').value=getFldPosArr(CSV);">
+</div>
+    <span>Filter records in CSV (click "Add condition" below)</span> 
+    <div id="rqb">&nbsp;</div>
+<br/>
+<table><tr><th colspan="4">Sort CSV &nbsp; 
+    <label><input type="checkbox" id="chkIgnoreCase" value="Y" onclick="CSV.sortIgnoreCase=this.checked"> Ignore Case</label></th></tr>
+    <tr><td>&nbsp;</td><td>Field #</t   d><td>Type</td><td>Direction</td></tr>
+    <tr><td>First By</td>
+    <td><select id="selSortFld1" onchange="sortStr()"><option value="">-Choose-</option></select></td>
+    <td><select id="selSortType1" onchange="sortStr()"><option value="">-Default-</option><option value="C">String</option><option value="N">Numeric</option></select></td>
+    <td><select id="selSortAsc1" onchange="sortStr()"><option value="">Ascending</option><option value="D">Descending</option></select></td>
+    </tr>
+    <tr><td>Then By</td>
+    <td><select id="selSortFld2" onchange="sortStr()"><option value="">-Choose-</option></select></td>
+    <td><select id="selSortType2" onchange="sortStr()"><option value="">-Default-</option><option value="C">String</option><option value="N">Numeric</option></select></td>
+    <td><select id="selSortAsc2" onchange="sortStr()"><option value="">Ascending</option><option value="D">Descending</option></select></td>
+    </tr>
+    <tr><td>Then By</td>
+    <td><select id="selSortFld3" onchange="sortStr()"><option value="">-Choose-</option></select></td>
+    <td><select id="selSortType3" onchange="sortStr()"><option value="">-Default-</option><option value="C">String</option><option value="N">Numeric</option></select></td>
+    <td><select id="selSortAsc3" onchange="sortStr()"><option value="">Ascending</option><option value="D">Descending</option></select></td>
+    </tr>
+     </table>
+    <br/>
+   <input type="button" id="btnRun" value="Convert CSV To Delimited" title="Convert CSV To Delimited" 
+     onclick="runit()" > <br/>
+    Output Field Separator: 
+     <label><input type="radio" name="outsep" id="outSepComma" value="," > Comma-,</label> &nbsp;    
+     <label><input type="radio" name="outsep" id="outSepSemicolon" value=";" checked> Semi-colon-;</label> &nbsp;
+    <label><input type="radio" name="outsep" id="outSepSemicolon" value=":" > Colon-:</label> &nbsp;
+     <label><input type="radio" name="outsep" id="outSepPipe" value="|" > Bar-|</label> &nbsp;
+     <label><input type="radio" name="outsep" id="outSepTab" value=" " onclick="this.value='\t'" > Tab</label> &nbsp;
+     <label><input type="radio" name="outsep" id="outSepOther" value="o" > Other-Choose</label>
+    <label><input type="text" size="2" id="outSepOtherVal" value="*"/></label>
+    <br/><label><input type="checkbox" id="chkForce" value="Y"> Force text format for Excel</label>
+    <br/><label><input id="chkCsvQuotes" type="checkbox" /> Force Wrap values in double quotes</label>
+    <br/><label><input type="checkbox" id="chkDefaultHeader" value="Y"> Add a header line if missing</label>
+    <br/><label><input type="checkbox" id="chkAppend" value="Y"> Append Results below</label>
+    <br/><label><input type="checkbox" id="chkNoBreaks" value="Y"> Suppress Line Breaks in Fields</label>
+   </form>
+   <hr/>
+    <center>
+    <label><input type="text" size="15" id="fn" value="convertcsv" title="Enter filename without extension" />.csv</label>
+    <label><input type="button" value="Save to Disk" onclick="saveFile(document.getElementById('txta').value,'csv')" /></label><br/>
+   <textarea id="txta" rows="15" cols="100" wrap="off" placeholder="Output Results"></textarea></center>
+</div>
+</div>
+<div class="footer">
+  <hr class="fatline"/>
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-2674404638298268";
+/* WideAcross */
+google_ad_slot = "4850643811";
+google_ad_width = 728;
+google_ad_height = 90;
+google_color_border = "FFF";//"000000";
+google_color_bg = "FFF";
+//-->
+</script>
+<script type="text/javascript"
+src="../pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<br/>
+<script src="js/footer.js"></script>
+</div>
+
+
+<script>
+parseAndOptions(CSV);
+</script>
+</body>
+</html>
+
+<!-- Localized -->

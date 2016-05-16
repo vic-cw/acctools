@@ -1,0 +1,9 @@
+Account 012345678910 Posted Operations
+Operation Date and Time;Operation Amount;Operation Description;Amount in account currency;Debit/Credit Date;Remain amount
+15/09/2014;;Opening balance;0.00;15/09/2014;123.45
+20/09/2014;5.00 USD;Misc Debit E-SERVICE FROM SIN DOE JOHN;-5.00;20/09/2014;123.45
+25/09/2014;25.00 USD;Purchase-POS Purchase-POS/SKYPE COMMUNICATIO, LUXEMBOURG, LU/Orig. auth. amount:USD25/Orig. clear. amount:USD25/Txn. time:17.09.2014 00:00:00/9876 54xx xxxx 3210/TWO ID:18770105/Doc.No:8035854-VISA-24SEP2014;-25.00;25/09/2014;123.45
+14/10/2014;;Closing balance;0.00;14/10/2014;123.45
+09/02/2015;;Existing blocked amounts;0.00;09/02/2015;123.45
+05/02/2015;;PAN:9876**..**4321, CARD HOLDER:JOHN DOE, Orig. amount:25.00/USD, Orig. time:04/02/2015 21:21:56, From acct:012345678910 (DOE JOHN), Retailer:51515633, Termowner:SKYPE COMMUNICATIO, Terminal:28021785, Country:LUXEMBOURG, TWOID:23941428;-25.00;05/02/2015;123.45
+09/02/2015;;Total blocked amounts;+25.00;09/02/2015;123.45
