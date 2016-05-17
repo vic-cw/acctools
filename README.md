@@ -19,6 +19,26 @@ Examples:
     
     $ ./download_aba_statements.sh 2015-01-01 2015-12-31
 
+Typical output:
+
+    $ ./download_aba_statements.sh 2015-01-01 2015-12-31
+    Username: JohnDoe
+    Password: 
+    CAP card token: 1234567890
+    Starting...
+    Opening page...
+    Logging in...
+    Verifying CAP Token...
+    Logged in
+    Generating data...
+    Data generated
+    Downloading statements...
+    CSV file saved in 'ABA Bank Statement - 2015-01-01 to 2015-12-31/ABA Bank Statement - 2015-01-01 to 2015-12-31.csv'
+    PDF file saved in 'ABA Bank Statement - 2015-01-01 to 2015-12-31/ABA Bank Statement - 2015-01-01 to 2015-12-31.pdf'
+    XLS file saved in 'ABA Bank Statement - 2015-01-01 to 2015-12-31/ABA Bank Statement - 2015-01-01 to 2015-12-31.xlsx'
+    Logging out...
+    Logged out
+
 <br>
 #### format_bank_statement
 
