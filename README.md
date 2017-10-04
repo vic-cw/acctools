@@ -40,6 +40,7 @@ Typical output:
     Logged out
 
 <br>
+
 #### format_bank_statement
 
 Formats a given csv statement, from either Advanced Bank of Asia or Société Générale, to make it usable in accounting software, such as Wave accounting.
@@ -53,6 +54,7 @@ Examples:
     $ ./format_bank_statement.sh downloaded_statement.csv clean_statement.csv
 
 <br>
+
 ## Download
 
 All download packages come ready to run. Once downloaded, simply unzip and start using :
