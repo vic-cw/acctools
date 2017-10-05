@@ -76,7 +76,7 @@ Requirements :
 
 Download packages come with all dependencies, but if you would like to clone from this git repository, you will need the following installed on your system:
 
-- [phantomjs](http://phantomjs.org/download.html)
+- [phantomjs](https://github.com/eugene1g/phantomjs/releases)
 - (Optional) [node](https://nodejs.org/en/download) and [mocha](https://mochajs.org/#installation) are required to run some tests, not all though
 
 ## License
