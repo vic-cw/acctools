@@ -66,6 +66,7 @@ Zip packages :
 
 - [Mac OS X](http://victor.combal-weiss.eu/acctools-macosx.zip)
 - [Linux 32-bit](http://victor.combal-weiss.eu/acctools-linux_32.zip)
+    (issues on certain configurations)
 
 Requirements :
 
