@@ -1,0 +1,5 @@
+**/.DS_Store
+builds/
+executables_for_distributions/
+src/download_statements/debug/
+src/utilities/
