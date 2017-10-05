@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 DEFAULT_CUT_OFF_DATE=14
 DEFAULT_FILE_BASE_NAME="ABA Bank Statement - "

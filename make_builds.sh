@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 SCRIPT_NAME=$(basename "$0")
 
@@ -75,7 +75,7 @@ while read platform; do
 	# Clean
 
 	rm -rd "$DEST" 2>/dev/null
-	mkdir "$DEST" 2>/dev/null
+	mkdir -p "$DEST" 2>/dev/null
 
 
 	# Copy source files
@@ -99,7 +99,9 @@ while read platform; do
 
 	echo "   Copying executables"
 
-	cp "$EXECUTABLES_DIR/$platform/phantomjs" "$DEST/utilities/phantomjs/phantomjs"
+        PHANTOM_DEST_PATH="$DEST/utilities/phantomjs"
+        mkdir -p "$PHANTOM_DEST_PATH"
+	cp "$EXECUTABLES_DIR/$platform/phantomjs" "$PHANTOM_DEST_PATH/phantomjs"
 
 
 	# Zip
