@@ -144,6 +144,7 @@ while read platform; do
 
 	echo "   Copying executables"
 
+	mkdir -p "$DEST/utilities/phantomjs"
 	cp "$EXECUTABLES_DIR/$platform/phantomjs" "$DEST/utilities/phantomjs/phantomjs"
         cp "$JAR_FILE" "$DEST/utilities/acctools.jar"
 
