@@ -2,7 +2,6 @@
 builds/
 executables_for_distributions/
 src/download_statements/debug/
-src/utilities/
 src/java/build/
 src/java/build.xml
 src/java/dist/
