@@ -129,7 +129,6 @@ while read platform; do
 	rsync -a \
 		--exclude=**/.DS_Store \
 		--exclude=**/download_statements/debug/** \
-		--exclude=**/utilities/phantomjs/phantomjs \
                 --exclude=java \
 		"$SRC_DIR/" "$DEST"
 
@@ -146,6 +145,7 @@ while read platform; do
 
 	mkdir -p "$DEST/utilities/phantomjs"
 	cp "$EXECUTABLES_DIR/$platform/phantomjs" "$DEST/utilities/phantomjs/phantomjs"
+	cp "$EXECUTABLES_DIR/$platform/pdftotext" "$DEST/utilities/pdftotext"
         cp "$JAR_FILE" "$DEST/utilities/acctools.jar"
 
 	# Zip
