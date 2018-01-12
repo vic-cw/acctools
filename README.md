@@ -3,7 +3,7 @@
 Set of command line tools to automate some accounting tasks. Tools include :
 
 - **download_aba_statements**: download statements from Advanced Bank of Asia
-- **format_bank_statement**: get csv bank statement ready for use in accounting software. Accepts statements from Advanced Bank of Asia and Société Générale
+- **format_bank_statement**: get csv or pdf bank statement ready for use in accounting software. Accepts PDF and csv statements from Crédit Industriel et Commercial (CIC), csv statements from Advanced Bank of Asia and Société Générale
 
 ## Tools summary
 
@@ -43,15 +43,17 @@ Typical output:
 
 #### format_bank_statement
 
-Formats a given csv statement, from either Advanced Bank of Asia or Société Générale, to make it usable in accounting software, such as Wave accounting.
+Formats a given pdf or csv statement from Crédit Industriel et Commercial, or csv statement from Advanced Bank of Asia or Société Générale, to make it usable in accounting software, such as Wave accounting.
 
-Removes unwanted lines from statement, keeps only list of transactions, and converts file from semicolon-delimited to comma-delimited.
+Removes unwanted lines from statement, keeps only list of transactions, and converts file to comma-delimited csv format.
 
 Examples:
 
     $ ./format_bank_statement.sh downloaded_statement.csv
     
     $ ./format_bank_statement.sh downloaded_statement.csv clean_statement.csv
+
+    $ ./format_bank_statement.sh "Extrait de comptes 12345 67891 011121314.. au 2015-10-31.pdf"
 
 <br>
 
@@ -70,6 +72,7 @@ Zip packages :
 
 Requirements :
 
+- [java 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
 - [python](https://www.python.org/downloads)
 
 ## Requirements to run from cloned repository
@@ -77,12 +80,13 @@ Requirements :
 Download packages come with all dependencies, but if you would like to clone from this git repository, you will need the following installed on your system:
 
 - [phantomjs](https://github.com/eugene1g/phantomjs/releases)
+- [pdftotext](https://www.xpdfreader.com/download.html)
 - (Optional) [node](https://nodejs.org/en/download) and [mocha](https://mochajs.org/#installation) are required to run some tests, not all though
 
 ## License
 
 
-    Copyright 2014-2016 Victor Combal-Weiss
+    Copyright 2014-2018 Victor Combal-Weiss
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

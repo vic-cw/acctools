@@ -1,0 +1,21 @@
+
+Usage:  java {0}.{1} [-h]
+
+        Reads text from standard input and test whether it seems 
+        to be the text representation of a pdf statement from 
+        Crédit Industriel et Commercial (CIC) obtained by running 
+        "pdftotext -table" on it.
+
+Options:
+        -h  Display this help message
+
+Exit code:
+        0   if answer is yes
+        1   otherwise
+
+EXAMPLE:
+        if java {0}.{1} < transformed_pdf_file.txt; then ...
+
+
+Project home page : https://github.com/vic-cw/acctools
+_

@@ -1,0 +1,9 @@
+Account 012345678910 Posted Operations
+Operation Date and Time;Operation Amount;Operation Description;Amount in account currency;Debit/Credit Date;Remain amount
+15/07/2014;;Opening balance;0.00;15/07/2014;123.45
+24/07/2014;5.00 USD;Misc Debit E-SERVICE FROM SIN DOE JOHN;-5.00;24/07/2014;123.45
+12/08/2014;43.90 USD;Purchase-POS Purchase-POS/RISI 2455044, CHILLY MAZAR, FR/Orig. auth. amount:EUR32.04/Orig. clear. amount:EUR32.04/Txn. time:10.08.2014 00:00:00/9876 54xx xxxx 3210/DOE JOHN/TWO ID:17604968/Doc.No:7546126-VISA-11AUG2014;-43.90;12/08/2014;123.45
+14/08/2014;;Closing balance;0.00;14/08/2014;123.45
+11/09/2014;;Existing blocked amounts;0.00;11/09/2014;123.45
+26/03/2013;;Mail/Phone Order, CARD : 9876 **** **** 4321, TRANS. DATE : 26-MAR, TIME : 00:00:00, LOCATION : P13^^ - SKYPE COMMUNICATIO, TERM. : 28021785, TRACE : 41278, TWOID : 5774399, ORIG.AMNT : 25, ORIG.CCY : USD;-25.00;26/03/2013;123.45
+11/09/2014;;Total blocked amounts;+434.43;11/09/2014;123.45

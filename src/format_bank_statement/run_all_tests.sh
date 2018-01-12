@@ -45,6 +45,8 @@ _DIR_=$(dirname "${BASH_SOURCE[0]}")
 
 "$_DIR_/characterization_test/test.sh" "$_DIR_/../format_bank_statement.sh" || \
 		ALL_GOOD=false
+"$_DIR_/utilities/run_all_tests.sh" || \
+		ALL_GOOD=false
 
 # Announce results
 
