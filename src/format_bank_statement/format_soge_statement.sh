@@ -63,7 +63,7 @@ FILE="$1"
 
 _DIR_=$(dirname "${BASH_SOURCE[0]}")
 
-"$_DIR_/"trim_soge_statement.sh "$FILE" | "$_DIR_/"convert_csv_from_semicolon_to_comma.sh
+"$_DIR_/"trim_soge_statement.sh "$FILE" | "$_DIR_/"utilities/convert_csv/convert_csv_from_semicolon_to_comma.sh
 
 if [  ! "${PIPESTATUS[0]} ${PIPESTATUS[1]}" = "0 0" ] ; then
 	exit 1

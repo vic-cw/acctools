@@ -50,8 +50,8 @@ INPUT=`cat /dev/stdin`
 
 _DIR_=$(dirname "${BASH_SOURCE[0]}")
 
-PATH="$_DIR_/../utilities/phantomjs:$PATH" \
-phantomjs "$_DIR_/convert_csv_from_semicolon_to_comma/phantomjs_convert_csv_from_semicolon_to_comma.js" "$INPUT"
+PATH="$_DIR_/../../../utilities/phantomjs:$PATH" \
+phantomjs "$_DIR_/phantomjs_convert_csv_from_semicolon_to_comma.js" "$INPUT"
 
 EXIT_CODE="$?"
 
