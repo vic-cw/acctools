@@ -66,8 +66,8 @@ All download packages come ready to run. Once downloaded, simply unzip and start
 
 Zip packages :
 
-- [Mac OS X](http://victor.combal-weiss.eu/acctools-macosx.zip)
-- [Linux 64-bit](http://victor.combal-weiss.eu/acctools-linux_64.zip)
+- [Mac OS X](https://github.com/vic-cw/acctools/releases/download/v0.1/acctools-0.1-macosx.zip)
+- [Linux 64-bit](https://github.com/vic-cw/acctools/releases/download/v0.1/acctools-0.1-linux_64.zip)
     (issues on certain configurations)
 
 Requirements :
