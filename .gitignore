@@ -7,3 +7,4 @@ src/java/build.xml
 src/java/dist/
 src/java/nbproject/
 .gradle/
+.project
