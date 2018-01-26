@@ -66,8 +66,8 @@ All download packages come ready to run. Once downloaded, simply unzip and start
 
 Zip packages :
 
-- [Mac OS X](https://github.com/vic-cw/acctools/releases/download/v0.1/acctools-0.1-macosx.zip)
-- [Linux 64-bit](https://github.com/vic-cw/acctools/releases/download/v0.1/acctools-0.1-linux_64.zip)
+- [Mac OS X](https://github.com/vic-cw/acctools/releases/download/v0.1.1/acctools-0.1.1-macosx.zip)
+- [Linux 64-bit](https://github.com/vic-cw/acctools/releases/download/v0.1.1/acctools-0.1.1-linux_64.zip)
     (issues on certain configurations)
 
 Requirements :
@@ -75,13 +75,24 @@ Requirements :
 - [java 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
 - [python](https://www.python.org/downloads)
 
-## Requirements to run from cloned repository
+## Developing
 
-Download packages come with all dependencies, but if you would like to clone from this git repository, you will need the following installed on your system:
+To develop, clone this repository and then:
 
-- [phantomjs](http://phantomjs.org/download.html)
-- [pdftotext](https://www.xpdfreader.com/download.html)
-- (Optional) [node](https://nodejs.org/en/download) and [mocha](https://mochajs.org/#installation) are required to run some tests, not all though
+- To build:
+   `$ ./gradlew assembleNoZip_macosx`
+   or
+   `$ ./gradlew assembleNoZip_linux_64`
+- To build and test:
+   `$ ./gradlew test_macosx`
+   or
+   `$ ./gradlew test_linux_64`
+- To build and run a specific command inside built folder:
+   `$ ./gradlew testRun_macosx <<<"./format_bank_statement.sh /Users/me/my_statement.csv"`
+   or
+   `$ ./gradlew testRun_linux_64 <<<"./format_bank_statement.sh /Users/me/my_statement.csv"`
+
+[Node](https://nodejs.org/en/download) and [mocha](https://mochajs.org/#installation) are required to run some of the tests.
 
 ## License
 
