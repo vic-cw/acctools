@@ -8,3 +8,4 @@ src/java/dist/
 src/java/nbproject/
 .gradle/
 .project
+build/

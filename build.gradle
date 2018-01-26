@@ -1,2 +1,515 @@
-apply plugin: 'eclipse'
-apply plugin: 'idea'
+import java.io.FileWriter;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.text.MessageFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.Scanner;
+
+import de.undercouch.gradle.tasks.download.Download;
+
+plugins {
+    id "de.undercouch.download" version "3.3.0"
+    id "com.palantir.git-version" version "0.10.1"
+}
+
+apply plugin: "eclipse"
+apply plugin: "idea"
+
+apply plugin: "java"
+
+project.ext.version = gitVersion()
+
+project.ext.platformProperties = [
+	macosx: [
+		name: "Mac OS X",
+		dependencies: [
+			[ 
+				url: "https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-macosx.zip",
+				artifactName: "phantomjs",
+				targetBinaryName: "phantomjs",
+				originalBinaryName: "phantomjs",
+				includes: ["*/bin/**", "*/LICENSE.BSD", "*/third-party.txt", "*/README.md"],
+				excludes: []
+			],
+			[
+				url: "https://xpdfreader-dl.s3.amazonaws.com/xpdf-tools-mac-4.00.tar.gz",
+				artifactName: "xpdf",
+				targetBinaryName: "pdftotext",
+				originalBinaryName: "pdftotext",
+				includes: ["*/bin32/pdftotext", "*/COPYING*", "*/README", "*/doc/*"],
+				excludes: []
+			]
+		]
+	],
+	linux_32: [
+		name: "Linux 32 bit",
+		dependencies: [
+			[
+				url: "https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-i686.tar.bz2",
+				artifactName: "phantomjs",
+				targetBinaryName: "phantomjs",
+				originalBinaryName: "phantomjs",
+				includes: ["*/bin/**", "*/LICENSE.BSD", "*/third-party.txt", "*/README.md"],
+				excludes: []
+			],
+			[
+				url: "https://xpdfreader-dl.s3.amazonaws.com/xpdf-tools-linux-4.00.tar.gz",
+				artifactName: "xpdf",
+				targetBinaryName: "pdftotext",
+				originalBinaryName: "pdftotext",
+				includes: ["*/bin32/pdftotext", "*/COPYING*", "*/README", "*/doc/*"],
+				excludes: []
+			]
+		] 
+	],
+	linux_64: [
+		name: "Linux 64 bit",
+		dependencies: [
+			[
+				url: "https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2",
+				artifactName: "phantomjs",
+				targetBinaryName: "phantomjs",
+				originalBinaryName: "phantomjs",
+				includes: ["*/bin/**", "*/LICENSE.BSD", "*/third-party.txt", "*/README.md"],
+				excludes: []
+			],
+			[
+				url: "https://xpdfreader-dl.s3.amazonaws.com/xpdf-tools-linux-4.00.tar.gz",
+				artifactName: "xpdf",
+				targetBinaryName: "pdftotext",
+				originalBinaryName: "pdftotext",
+				includes: ["*/bin64/pdftotext", "*/COPYING*", "*/README", "*/doc/*"],
+				excludes: []
+			]
+		] 
+	]
+];
+
+sourceSets.main.java.srcDirs = ["src/java"]
+
+boolean taskAlreadyExists(String taskName) {
+	return tasks.findByName(taskName) != null;
+}
+
+File getDistFolder() {
+	return new File(buildDir, "dist");
+}
+
+File getDistFolder(String platform) {
+	return new File(getDistFolder(), platform);
+}
+
+File getUtilitiesFolder(String platform) {
+	return new File(getDistFolder(platform), "utilities");
+}
+
+File getTempFolder(String platform) {
+	return new File(buildDir, "tmp/" + platform);
+}
+
+String createMakeDirectoryTask(String platform) {
+	String taskName = "makeDirectory_" + platform;
+	if (taskAlreadyExists(taskName))
+		return taskName;
+	task (taskName) {
+		doFirst { 
+			getUtilitiesFolder(platform).mkdirs()
+		}
+	}
+	return taskName;
+}
+
+String createCopySrcTask(String platform) {
+	String taskName = "copySrc_" + platform;
+	if (taskAlreadyExists(taskName))
+		return taskName;
+	task (taskName, type: Copy) {
+		dependsOn ("makeDirectory_" + platform)
+		from ("src") {
+			exclude '**/.DS_Store', '**/download_statements/debug/**', 'java'
+		}
+		into getDistFolder(platform)
+	}
+	return taskName;
+}
+
+String createSetDebugToFalseTask(String platform) {
+	String taskName = "setDebugToFalse_" + platform;
+	if (taskAlreadyExists(taskName))
+		return taskName;
+	task (taskName, type: Copy) {
+		dependsOn ("copySrc_" + platform);
+	    from ("src") {
+			include "download_aba_statements.sh"
+			filter { line ->
+		      line.replaceAll("DEBUG=\"true\"","DEBUG=\"false\"")
+			}
+		}
+		into getDistFolder(platform)
+	}
+	return taskName;
+}
+
+String createCopyJarTask(String platform) {	
+	String taskName = "copyJar_" + platform;
+	if (taskAlreadyExists(taskName))
+		return taskName;
+	task (taskName, type:Copy) {
+		dependsOn jar
+		dependsOn ("makeDirectory_" + platform)
+		
+		from(new File(buildDir, "libs")) {
+			include "acctools.jar"
+		}
+		into getUtilitiesFolder(platform)
+	}
+	return taskName;
+}
+
+project.ext.DOWNLOAD_CACHE_PATH = System.getProperty("user.home") + 
+		"/.gradle/caches/modules-2/files-2.1/de.undercouch/cache/";
+
+String urlToCachePath(String url) {
+	int domainStart = url.indexOf("//");
+	if (domainStart == -1)
+		domainStart = 0;
+	else
+		domainStart += 2;
+	String urlWithoutProtocol = url.substring(domainStart);
+	int restStart = urlWithoutProtocol.indexOf("/");
+	if (restStart == -1)
+		restStart = urlWithoutProtocol.length();
+	String domain = urlWithoutProtocol.substring(0, restStart);
+	int queryStart = urlWithoutProtocol.indexOf('?');
+	if (queryStart == -1)
+		queryStart = urlWithoutProtocol.length();
+	String rest = urlWithoutProtocol.substring(restStart, queryStart);
+	return  DOWNLOAD_CACHE_PATH + domain.tokenize('.').reverse().join('/') + rest;
+}
+
+String urlToCachedFile(String url) {
+	int fileStart = url.lastIndexOf("/") + 1;
+	int fileEnd = url.indexOf("?");
+	if (fileEnd == -1)
+		fileEnd = url.length();
+	String file = url.substring(fileStart, fileEnd);
+	return file;
+}
+
+String createCacheTask(String url) {
+	String taskName =  "cacheFile_" + url.hashCode();
+	if (taskAlreadyExists(taskName))
+		return taskName;
+	String destPath = urlToCachePath(url);
+	task (taskName, type: Download) {
+		outputs.file(destPath);
+	    src url
+	    dest destPath
+	    overwrite false
+	}
+	return taskName;
+}
+
+String getDownloadTaskName(String url, File dest) {
+	return "download_" + url.hashCode() + "_" + dest.hashCode();
+}
+
+String createDownloadTask(String url, File dest) {
+	String cacheTaskName = createCacheTask(url);
+	dest.mkdirs();
+	String taskName = getDownloadTaskName(url, dest);
+	if (taskAlreadyExists(taskName))
+		return taskName;
+	task (taskName, type: Copy) {
+		dependsOn cacheTaskName
+	 	String destPath = urlToCachePath(url);
+	 	from (destPath) {
+	 		include urlToCachedFile(url);
+	 	}
+	 	into dest
+	}
+	return taskName;
+}
+
+String createCopyBinariesTask(String platform) {
+	File dest = getTempFolder(platform);
+	
+	String[] downloadTasks = new String[platformProperties[platform]['dependencies'].size()];
+	for (int i = 0; i < platformProperties[platform]['dependencies'].size(); i++) {
+		String url = platformProperties[platform]['dependencies'][i]['url'];
+		String downloadTaskName = createDownloadTask(url, dest);
+		tasks.findByName(downloadTaskName).dependsOn("makeDirectory_" + platform);
+		downloadTasks[i] = downloadTaskName;
+	}
+	
+	String taskName = "copyBinaries_" + platform;
+	if (taskAlreadyExists(taskName))
+		return taskName;
+	task (taskName) {
+		dependsOn downloadTasks
+	}
+}
+
+String getArtifactDownloadUrl(String platform, String artifactName) {
+	for (Map<?, ?> dependency : project.ext.platformProperties[platform]["dependencies"]) {
+		if (dependency["artifactName"] == artifactName) {
+			return dependency.url;
+		}
+	}
+	return null;
+}
+
+String getArtifactDownloadTaskName(String platform, String artifactName) {
+	String url = getArtifactDownloadUrl(platform, artifactName);
+	File dest = getTempFolder(platform);
+	return getDownloadTaskName(url, dest);
+}
+
+String getArtifactDownloadedBinary(String platform, String artifactName) {
+	String url = getArtifactDownloadUrl(platform, artifactName);
+	return getTempFolder(platform).toString() + "/" + urlToCachedFile(url);
+}
+
+String findFileWithName(String substring, File directory) {
+	String[] results = new FileNameFinder().getFileNames(directory.toString(), "*" + substring + "*", "");
+	if (results == null || results.length == 0) {
+		return null;
+	}
+	return results[0];
+}
+
+String createUnzipBinaryTask(String platform, String artifactName, String binaryName, String[] includes,
+		String[] excludes) {
+	
+	String taskName = "unzipBinary_" + binaryName + "_" + platform;
+	if (taskAlreadyExists(taskName)) {
+		return taskName;
+	}
+	
+	String archive = getArtifactDownloadedBinary(platform, artifactName);
+	File destination = new File(getUtilitiesFolder(platform), binaryName);
+	
+	task (taskName) {
+		dependsOn getArtifactDownloadTaskName(platform, artifactName)
+		inputs.file(archive)
+		outputs.dir(destination)
+		
+		doFirst {
+			delete destination;
+			destination.mkdirs();
+			boolean tar = (archive.indexOf("zip") != (archive.length() - 3));
+	
+			copy {		
+				from (tar ? tarTree(archive) : zipTree(archive)) {
+					include includes
+					exclude excludes 
+				}
+				into destination
+			}
+		}
+	}
+	return taskName;
+}
+
+void writeFile(File destination, String content) {
+	   Writer writer = new FileWriter(destination);
+	   writer.write(content);
+	   writer.close();
+}
+
+
+String createMakeSymlinkTask(String platform, String binaryName, String originalName) {
+	String taskName = "makeSymlink_" + binaryName + "_" + platform;
+	if (taskAlreadyExists(taskName)) {
+		return taskName;
+	}
+	File folder = new File(getUtilitiesFolder(platform), binaryName);
+	java.nio.file.Path destination = Paths.get(folder.toString() + "/" + binaryName);
+	
+	task (taskName) {
+		inputs.dir folder
+		outputs.file destination
+		dependsOn ("unzipBinary_" + binaryName + "_" + platform) 
+		doFirst {
+    			if(Files.exists(destination)) {
+        			Files.delete(destination);    
+        		}
+    			String[] sourceResults = new FileNameFinder().getFileNames(folder.toString(), "**/" + originalName, "");
+			if (sourceResults == null || sourceResults.length == 0) {
+				throw new IllegalStateException("Could not find " + binaryName + " executable in " + folder); 
+			}
+			java.nio.file.Path source = Paths.get(sourceResults[0]);
+			String templateScript = new File(projectDir, "gradle/forwarding_script_template.sh").text;
+			String target = "./" + folder.toURI().relativize(source.toFile().toURI()).getPath();
+			String script = MessageFormat.format(templateScript, target);
+			writeFile(destination.toFile(), script);
+			destination.toFile().setExecutable(true);
+		}
+	}
+	return taskName;
+}
+
+String createUnzipBinariesTask(String platform) {
+	
+	String taskName = "unzipBinaries_" + platform;
+	if (taskAlreadyExists(taskName)) {
+		return taskName;
+	}
+	
+	int nbDependencies = project.ext.platformProperties.get(platform).get("dependencies").size();
+	String[] unzipTasks = new String[nbDependencies];
+	String[] symLinkTasks = new String[nbDependencies];
+	
+	for (int i = 0; i<nbDependencies; i++) {
+		Map<String, ?> dependency = project.ext.platformProperties.get(platform).get("dependencies")[i];
+	    String artifactName = dependency.get("artifactName");
+		String binaryName = dependency.get("targetBinaryName");
+		String originalName = dependency.get("originalBinaryName");
+		String[] includes = dependency.get("includes");
+		String[] excludes = dependency.get("excludes");
+		
+		String unzipTaskName = createUnzipBinaryTask(platform, artifactName, binaryName, includes, excludes);
+		String symLinkTaskName = createMakeSymlinkTask(platform, binaryName, originalName);
+		
+		unzipTasks[i] = unzipTaskName;
+		symLinkTasks[i] = symLinkTaskName;         
+ 	}
+
+	task (taskName) {
+		dependsOn "copyBinaries_" + platform
+		dependsOn unzipTasks 
+		dependsOn symLinkTasks
+	}
+	return taskName;
+}
+
+String createAssembleNoZipTask(String platform, String platformName) {
+	String taskName = "assembleNoZip_" + platform;
+	if (taskAlreadyExists(taskName))
+		return taskName;
+	task (taskName) {
+		dependsOn "setDebugToFalse_" + platform
+		dependsOn "copyJar_" + platform
+		dependsOn "unzipBinaries_" + platform
+		
+		group "Custom Build"
+		description "Assemble distribution package for " + platformName + " systems without zipping"
+	}
+	return taskName;
+}
+
+String removeLeadingV(String version) {
+	if (Pattern.compile("^v[0-9].*").matcher(version).matches()) {
+		return version.substring(1);	
+   	}
+   	return version;
+}
+
+
+String createAssembleTask(String platform, String platformName) {
+	String taskName = "assemble_" + platform;
+	if (taskAlreadyExists(taskName))
+		return taskName;
+	task (taskName, type: Zip){
+		dependsOn "assembleNoZip_" + platform
+		group "Custom Build"
+		description "Assemble and zip distribution package for " + platformName + " systems"
+		
+		from getDistFolder(platform)
+		archiveName "acctools-" + removeLeadingV(project.ext.version) + "-" + platform + ".zip"
+		destinationDir getDistFolder()
+	}
+	return taskName;
+}
+
+String createTestTask(String platform, String platformName) {
+	String taskName = "test_" + platform;
+	if (taskAlreadyExists(taskName))
+		return taskName;
+	task (taskName) {
+		dependsOn ("assembleNoZip_" + platform)
+		group "Verification"
+		description ("Test project as assembled for " + platformName)
+		
+		doFirst {
+			exec {
+				workingDir getDistFolder(platform)
+				commandLine "./run_all_tests.sh"
+			}
+		}
+	}
+	return taskName;
+}
+
+String[] splitIntoTokens(String commandLine) {
+	String regex = "(([\"']).*?\\2|(?:[^\\\\ ]+\\\\\\s+)+[^\\\\ ]+|\\S+)";
+	Matcher matcher = Pattern.compile(regex).matcher(commandLine);
+	ArrayList<String> result = new ArrayList<>();
+	while (matcher.find()) {
+	    result.add(matcher.group());
+	}
+	return result.toArray();   
+}
+
+String createTestRunTask(String platform, String platformName) {
+	String taskName = "testRun_" + platform;
+	if (taskAlreadyExists(taskName)) {
+    		return taskName; 
+	}
+	task taskName, {
+    		dependsOn ("assembleNoZip_" + platform)
+    		group "Verification"
+    		description ("Assemble project for " + platformName 
+    			+ " then run line read from standard input in built package.\n"
+    			+ "Examples: \n"
+    			+ "   ./gradlew " + taskName + " <<<\"./format_bank_statement.sh -h\"\n"
+    			+ "   ./gradlew " + taskName + " <<<\"./format_bank_statement.sh My\\ statement.csv\"")
+    		doFirst {
+    			String typed = new Scanner(System.in).nextLine();
+    			String[] parsed = splitIntoTokens(typed);
+    			println ("Executing: " + parsed.join(" "))
+    			exec {
+    			    workingDir getDistFolder(platform)
+    			    commandLine parsed
+    			}
+
+    		} 
+    }
+    return taskName;
+}
+
+				
+platformProperties.each { platform, properties ->
+	createMakeDirectoryTask(platform)
+	createCopySrcTask(platform)
+	createSetDebugToFalseTask(platform)
+	createCopyJarTask(platform)
+	createCopyBinariesTask(platform)
+	createUnzipBinariesTask(platform)
+	createAssembleNoZipTask(platform, properties["name"])
+	createAssembleTask(platform, properties["name"])
+	assemble.dependsOn("assemble_" + platform)
+	createTestTask(platform, properties["name"])
+	createTestRunTask(platform, properties["name"])
+}
+
+task assembleNoZip {
+	dependsOn platformProperties.collect { key, properties -> "assembleNoZip_" + key }
+	
+	group "Custom Build"
+	description "Assemble for all platforms without zipping"
+}
+
+
+assemble.group "Custom Build"
+assemble.description "Assemble distribution packages for all platforms"
+
+task testAll {
+	group "Verification"
+	description "TODO : Runs all tests"
+}
+
+classes.group ""
+jar.group ""
+testClasses.group "" 

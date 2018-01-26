@@ -62,7 +62,7 @@ FILE="$1"
 
 _DIR_=$(dirname "${BASH_SOURCE[0]}")
 
-"$_DIR_/"../utilities/pdftotext -table "$FILE" /dev/stdout | \
+"$_DIR_/"../utilities/pdftotext/pdftotext -table "$FILE" /dev/stdout | \
 "$_DIR_/"utilities/convert_cic_pdf_text_to_csv/convert_cic_pdf_text_csv.sh
 
 exit 0
