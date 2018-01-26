@@ -80,17 +80,19 @@ Requirements :
 To develop, clone this repository and then:
 
 - To build:
-   `$ ./gradlew assembleNoZip_macosx`
-   or
-   `$ ./gradlew assembleNoZip_linux_64`
+
+      $ ./gradlew assembleNoZip_macosx      // if under Mac OS X
+      $ ./gradlew assembleNoZip_linux_64    // if under Linux
+
 - To build and test:
-   `$ ./gradlew test_macosx`
-   or
-   `$ ./gradlew test_linux_64`
+
+      $ ./gradlew test_macosx               // if under Mac OS X
+      $ ./gradlew test_linux_64             // if under Linux
+
 - To build and run a specific command inside built folder:
-   `$ ./gradlew testRun_macosx <<<"./format_bank_statement.sh /Users/me/my_statement.csv"`
-   or
-   `$ ./gradlew testRun_linux_64 <<<"./format_bank_statement.sh /Users/me/my_statement.csv"`
+
+      $ ./gradlew testRun_macosx <<<"./format_bank_statement.sh /Users/me/my_statement.csv"
+      $ ./gradlew testRun_linux_64 <<<"./format_bank_statement.sh /Users/me/my_statement.csv"
 
 [Node](https://nodejs.org/en/download) and [mocha](https://mochajs.org/#installation) are required to run some of the tests.
 
