@@ -51,5 +51,5 @@ done
 
 _DIR_=$(dirname "${BASH_SOURCE[0]}")
 
-java -cp "$_DIR_/../../../utilities/acctools.jar" \
+java -cp "$_DIR_/../../../utilities/jars/acctools.jar" \
    eu.combal_weiss.victor.acctools.formatting.cic.pdf.ConvertCicPdfTextToCsv

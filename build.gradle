@@ -159,10 +159,9 @@ String createCopyJarTask(String platform) {
 		dependsOn jar
 		dependsOn ("makeDirectory_" + platform)
 		
-		from(new File(buildDir, "libs")) {
-			include "acctools.jar"
-		}
-		into getUtilitiesFolder(platform)
+		from(new File(buildDir, "libs"))
+		from configurations.compile
+		into new File(getUtilitiesFolder(platform), "jars")
 	}
 	return taskName;
 }

@@ -72,7 +72,7 @@ START_LINE_REGEX="${START_LINE_REGEX//[^[:ascii:]]/}"
 
 
 "$_DIR_/../../../../utilities/pdftotext/pdftotext" -table "$FILE" /dev/stdout | \
-java -cp "$_DIR_/../../../../utilities/acctools.jar" \
+java -cp "$_DIR_/../../../../utilities/jars/acctools.jar" \
    eu.combal_weiss.victor.acctools.formatting.cic.pdf.IsCicPdfText
 
 if [ "${PIPESTATUS[1]}" != "0" ]; then
