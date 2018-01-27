@@ -7,11 +7,23 @@ import java.util.regex.Pattern;
 import java.util.Scanner;
 
 import de.undercouch.gradle.tasks.download.Download;
+import org.paleozogt.gradle.zip.SymUnzip;
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.paleozogt:symzip-plugin:0.9.4'
+    }
+}
 
 plugins {
     id "de.undercouch.download" version "3.3.0"
     id "com.palantir.git-version" version "0.10.1"
 }
+
+apply plugin: "org.paleozogt.symzip"
 
 apply plugin: "eclipse"
 apply plugin: "idea"
@@ -279,35 +291,84 @@ String findFileWithName(String substring, File directory) {
 	return results[0];
 }
 
-String createUnzipBinaryTask(String platform, String artifactName, String binaryName, String[] includes,
+String createUnzipBinaryTask(String archive, File destination, String platform, String artifactName, 
+		String[] includes, String[] excludes) {
+	String taskName = "unzipBinary_" + artifactName + "_" + platform;
+	if (taskAlreadyExists(taskName)) {
+		return taskName;
+	}
+	
+    task taskName, type: SymUnzip, {
+    		dependsOn getArtifactDownloadTaskName(platform, artifactName)
+    		
+		inputs.file(archive)
+		outputs.dir(destination)
+		
+		doFirst {
+		    delete destination;
+		    destination.mkdirs();
+		}
+		
+        from archive
+        into destination
+        
+        doLast {
+            FileTree tree = fileTree(destination);
+            tree.include excludes
+            tree.exclude includes
+            tree.each { it.delete() }
+        }
+
+    }
+    return taskName;
+}
+
+String createUntarBinaryTask(String archive, File destination, String platform, String artifactName,
+		String[] includes, String[] excludes) {
+
+	String taskName = "untarBinary_" + artifactName + "_" + platform;
+	if (taskAlreadyExists(taskName)) {
+		return taskName;
+	}
+	
+	task taskName, type:Copy, {
+        dependsOn getArtifactDownloadTaskName(platform, artifactName)
+        
+		inputs.file(archive)
+		outputs.dir(destination)
+		
+		doFirst {
+		    delete destination;
+		    destination.mkdirs();
+		}
+		from tarTree(archive), {
+	         include includes
+	         exclude excludes
+	    }
+		into destination
+    }
+	return taskName;
+}
+
+
+String createExpandBinaryTask(String platform, String artifactName, String binaryName, String[] includes,
 		String[] excludes) {
 	
-	String taskName = "unzipBinary_" + binaryName + "_" + platform;
+	String taskName = "expandBinary_" + binaryName + "_" + platform;
 	if (taskAlreadyExists(taskName)) {
 		return taskName;
 	}
 	
 	String archive = getArtifactDownloadedBinary(platform, artifactName);
-	File destination = new File(getUtilitiesFolder(platform), binaryName);
+	File destination = new File(getUtilitiesFolder(platform), binaryName + "/bin");
 	
-	task (taskName) {
-		dependsOn getArtifactDownloadTaskName(platform, artifactName)
-		inputs.file(archive)
-		outputs.dir(destination)
-		
-		doFirst {
-			delete destination;
-			destination.mkdirs();
-			boolean tar = (archive.indexOf("zip") != (archive.length() - 3));
+	boolean tar = (archive.indexOf("zip") != (archive.length() - 3));
 	
-			copy {		
-				from (tar ? tarTree(archive) : zipTree(archive)) {
-					include includes
-					exclude excludes 
-				}
-				into destination
-			}
-		}
+	String expandTask = tar ? createUntarBinaryTask(archive, destination, platform, artifactName, includes, excludes)
+							: createUnzipBinaryTask(archive, destination, platform, artifactName, includes, excludes);
+	
+	task taskName, type:Delete, {
+		dependsOn expandTask
 	}
 	return taskName;
 }
@@ -330,7 +391,7 @@ String createMakeSymlinkTask(String platform, String binaryName, String original
 	task (taskName) {
 		inputs.dir folder
 		outputs.file destination
-		dependsOn ("unzipBinary_" + binaryName + "_" + platform) 
+		dependsOn ("expandBinary_" + binaryName + "_" + platform) 
 		doFirst {
     			if(Files.exists(destination)) {
         			Files.delete(destination);    
@@ -358,7 +419,7 @@ String createUnzipBinariesTask(String platform) {
 	}
 	
 	int nbDependencies = project.ext.platformProperties.get(platform).get("dependencies").size();
-	String[] unzipTasks = new String[nbDependencies];
+	String[] expandTasks = new String[nbDependencies];
 	String[] symLinkTasks = new String[nbDependencies];
 	
 	for (int i = 0; i<nbDependencies; i++) {
@@ -369,16 +430,16 @@ String createUnzipBinariesTask(String platform) {
 		String[] includes = dependency.get("includes");
 		String[] excludes = dependency.get("excludes");
 		
-		String unzipTaskName = createUnzipBinaryTask(platform, artifactName, binaryName, includes, excludes);
+		String expandTaskName = createExpandBinaryTask(platform, artifactName, binaryName, includes, excludes);
 		String symLinkTaskName = createMakeSymlinkTask(platform, binaryName, originalName);
 		
-		unzipTasks[i] = unzipTaskName;
+		expandTasks[i] = expandTaskName;
 		symLinkTasks[i] = symLinkTaskName;         
  	}
 
 	task (taskName) {
 		dependsOn "copyBinaries_" + platform
-		dependsOn unzipTasks 
+		dependsOn expandTasks 
 		dependsOn symLinkTasks
 	}
 	return taskName;
