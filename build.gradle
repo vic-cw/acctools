@@ -86,8 +86,6 @@ project.ext.platformProperties = [
 	]
 ];
 
-sourceSets.main.java.srcDirs = ["src/java"]
-
 boolean taskAlreadyExists(String taskName) {
 	return tasks.findByName(taskName) != null;
 }
@@ -150,6 +148,9 @@ String createSetDebugToFalseTask(String platform) {
 	}
 	return taskName;
 }
+
+sourceSets.main.java.srcDirs = ["src/java/main"]
+
 
 String createCopyJarTask(String platform) {	
 	String taskName = "copyJar_" + platform;

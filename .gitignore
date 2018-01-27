@@ -7,3 +7,6 @@ src/java/nbproject/
 .gradle/
 .project
 build/
+.classpath
+.settings/
+bin/
