@@ -20,18 +20,19 @@ public class CommandLineUtilities {
     }
     
     public void printUsageMessage(Class<?> cl, PrintStream out) {
-        Scanner in = new Scanner(
-                cl.getResourceAsStream(
-                        cl.getSimpleName()
-                        + "_" +
-                        "UsageMessage.txt"));
-        StringBuilder sb = new StringBuilder();
-        while (in.hasNextLine()) {
-            sb.append(in.nextLine()).append('\n');
-        }
-        out.println(MessageFormat.format(sb.toString(), new Object[]{
-            cl.getPackage().getName(),
-            cl.getSimpleName()}));
+    		try (Scanner in = new Scanner(
+	                cl.getResourceAsStream(
+	                        cl.getSimpleName()
+	                        + "_" +
+	                        "UsageMessage.txt"))) {
+	        StringBuilder sb = new StringBuilder();
+	        while (in.hasNextLine()) {
+	            sb.append(in.nextLine()).append('\n');
+	        }
+	        out.println(MessageFormat.format(sb.toString(), new Object[]{
+	            cl.getPackage().getName(),
+	            cl.getSimpleName()}));
+    		}
     }
     
 }
