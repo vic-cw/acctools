@@ -162,7 +162,8 @@ String createSetDebugToFalseTask(String platform) {
 }
 
 sourceSets.main.java.srcDirs = ["src/java/main"]
-
+sourceSets.main.resources.srcDirs = ["src/java/resources"]
+sourceSets.main.resources.includes = ["**"]
 
 String createCopyJarTask(String platform) {	
 	String taskName = "copyJar_" + platform;
