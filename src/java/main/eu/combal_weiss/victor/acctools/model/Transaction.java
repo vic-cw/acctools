@@ -6,13 +6,12 @@ public class Transaction {
 
     private final Date date;
     private final Date valueDate;
-    private final String amount;
+    private final double amount;
     private String description;
     
     public Transaction(Date date, Date valueDate, 
-            String description, String amount) {
-        if (date == null || valueDate == null 
-                || amount == null || description == null)
+            String description, double amount) {
+        if (date == null || valueDate == null || description == null)
             throw new IllegalArgumentException(
                     "Null argument passed to Transaction constructor : " + 
                             date + ", " + valueDate + ", " 
@@ -31,7 +30,7 @@ public class Transaction {
     
     public Date getValueDate() { return (Date)valueDate.clone(); }
     
-    public String getAmount() { return amount; }
+    public double getAmount() { return amount; }
     
     public String getDescription() { return description; }
     

@@ -3,6 +3,7 @@ package eu.combal_weiss.victor.acctools.formatting.cic.pdf;
 import eu.combal_weiss.victor.acctools.utilities.StringHandler;
 import eu.combal_weiss.victor.acctools.model.Transaction;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,13 +21,15 @@ class TransactionParser {
     private List<Integer> columnWidths;
     private int nbColumns;
     private final DateFormat dateFormat;
+    private final NumberFormat amountFormat;
     private final String lineRegex;
     private final StringHandler stringHandler = new StringHandler();
 
     public TransactionParser(String lineRegex, List<Integer> columnWidths, 
-            DateFormat inputDateFormat) {
+            DateFormat inputDateFormat, NumberFormat inputAmountFormat) {
         this.lineRegex = lineRegex;
         this.dateFormat = inputDateFormat;
+        this.amountFormat = inputAmountFormat;
         updateColumnWidths(columnWidths);
         logger.log(Level.FINEST, "column widths passed to {0} constructor : {1}", 
                 new Object[]{TransactionParser.class.getName(), this.columnWidths});
@@ -69,10 +72,10 @@ class TransactionParser {
                     dateFormat.parse(splitLine[0]),
                     dateFormat.parse(splitLine[1]),
                     splitLine[2],
-                    amount);
+                    amountFormat.parse(amount).doubleValue());
         } catch (ParseException ex) {
             logger.log(Level.WARNING, 
-                    "Could not parse date in transaction {0}", 
+                    "Could not parse date or amount in transaction {0}",
                     Arrays.asList(splitLine));
             return null;
         }

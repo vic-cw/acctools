@@ -3,8 +3,11 @@ package eu.combal_weiss.victor.acctools.formatting.cic.pdf;
 import eu.combal_weiss.victor.acctools.utilities.ScannerByLine;
 import java.io.PrintStream;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,7 +54,15 @@ class PdfTextProcessor {
             new SimpleDateFormat("dd/MM/yyyy");
     private static final DateFormat OUTPUT_DATE_FORMAT = 
             new SimpleDateFormat("yyyy-MM-dd");
+    private static final String OUTPUT_AMOUNT_PATTERN = "###,##0.00";
+    private static final NumberFormat INPUT_AMOUNT_FORMAT = NumberFormat.getInstance(Locale.GERMANY);
+    private static final DecimalFormat OUTPUT_AMOUNT_FORMAT;
     
+    static {
+        OUTPUT_AMOUNT_FORMAT = (DecimalFormat) INPUT_AMOUNT_FORMAT;
+        OUTPUT_AMOUNT_FORMAT.applyPattern(OUTPUT_AMOUNT_PATTERN);
+    }
+
     private static final Logger logger = Logger.getLogger(PdfTextProcessor.class.getName());
     
     PdfTextProcessor(Scanner in) {
@@ -63,8 +74,8 @@ class PdfTextProcessor {
         logger.log(Level.FINEST, "Processing data : ");
 
         TransactionProcessor transactionProcessor = 
-                new SimpleTransactionProcessor(START_LINE, INPUT_DATE_FORMAT, 
-                    new CsvTransactionPrinter(out, ',', OUTPUT_DATE_FORMAT));
+                new SimpleTransactionProcessor(START_LINE, INPUT_DATE_FORMAT, INPUT_AMOUNT_FORMAT,
+                    new CsvTransactionPrinter(out, ',', OUTPUT_DATE_FORMAT, OUTPUT_AMOUNT_FORMAT));
         Iterator<LineWithColumnWidths> transactionExtractor = 
                 new TransactionExtractor(
                         new ScannerByLine(in),

@@ -2,6 +2,7 @@ package eu.combal_weiss.victor.acctools.formatting.cic.pdf;
 
 import eu.combal_weiss.victor.acctools.model.Transaction;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -15,9 +16,10 @@ class SimpleTransactionProcessor implements TransactionProcessor {
     SimpleTransactionProcessor(
             String lineRegex,
             DateFormat inputDateFormat,
+            NumberFormat inputAmountFormat,
             Consumer<Transaction> transactionPrinter) {
         this.parser = new TransactionParser(lineRegex, new LinkedList<>(), 
-                inputDateFormat);
+                inputDateFormat, inputAmountFormat);
         this.transactionPrinter = transactionPrinter;
     }
     
