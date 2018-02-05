@@ -27,7 +27,7 @@ class TransactionExtractor implements Iterator<LineWithColumnWidths> {
     TransactionExtractor(Iterator<String> in, Pattern startLineRegex, 
             Pattern transactionRegex, Pattern endLineRegex,
             int descriptionColumnIndex) {
-        this.in = new IteratorWithBackLog(new LinkedList<>(), in);
+        this.in = new IteratorWithBackLog<>(new LinkedList<>(), in);
         this.startLineRegex = startLineRegex;
         this.transactionRegex = transactionRegex;
         this.endLineRegex = endLineRegex;
