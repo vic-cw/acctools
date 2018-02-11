@@ -1,5 +1,7 @@
 package eu.combal_weiss.victor.acctools.model;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Transaction {
@@ -33,5 +35,11 @@ public class Transaction {
     public double getAmount() { return amount; }
     
     public String getDescription() { return description; }
-    
+
+    @Override
+    public String toString() {
+        DateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd");
+        return dateFormat.format(date) + ", " + dateFormat.format(valueDate) + ", "
+                + "\"" + description + "\"" + ", " + amount;
+    }
 }
