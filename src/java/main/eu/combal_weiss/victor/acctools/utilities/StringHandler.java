@@ -48,5 +48,19 @@ public class StringHandler {
         }
         return count;
     }
-    
+
+    public String trimQuotes(String text) {
+        if (text == null) {
+            throw new IllegalArgumentException("Null string passed to trimQuotes");
+        }
+        // TODO : make more efficient with just one rewrite
+        String result = text;
+        if (result.charAt(0) == '"') {
+            result = result.substring(1);
+        }
+        if (result.charAt(result.length() - 1) == '"') {
+            result = result.substring(0, result.length() - 1);
+        }
+        return result;
+    }
 }
