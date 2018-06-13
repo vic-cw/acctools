@@ -59,7 +59,7 @@ Examples:
 
 ## Download
 
-All download packages come ready to run. Once downloaded, simply unzip and start using :
+All download packages come ready to run. Once downloaded, unzip to a folder with spaces in path and start using :
 
     $ ./download_aba_statements.sh
     $ ./format_bank_statement.sh downloaded_statement.csv
